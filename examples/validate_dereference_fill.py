@@ -39,12 +39,13 @@ def main():
     else:
         print("Schema and instance valid")
 
-    # 2. De-reference (fill schema references)
-    schema = replace_refs(schema)  # replace_refs returns copy with refs fill
+    # 2. De-reference
+    # Replace $refs in schema with referenced schemas themselves.
+    schema = replace_refs(schema)  # jsonref.replace_refs with return to copy
 
     # 3. Fill instance with schema defaults
     print(f"Original:\n{instance}\n")
-    fill_default(instance, schema)  # fill_default mutates instance
+    fill_default(instance, schema)  # fill_default without return (mutates)
     print(f"Filled:\n{instance}\n")
 
 
