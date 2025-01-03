@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "jsonschema-fill-default"
+version = "0.1.0.20250103"
+description = "Fill a JSON instance with the defaults of the JSON Schema it is valid against"
+authors = ["Lars Maxfield"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+jsonschema = "^4.23.0"
+
+[tool.poetry.group.dev.dependencies]
+jsonref = "^1.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
