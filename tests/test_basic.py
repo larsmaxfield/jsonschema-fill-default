@@ -194,33 +194,148 @@ test_schemas_instances = {
             },
         ]
     },
-    # "allOf-if-then-else": {
-    #     "schema": {
-    #         "$schema": "https://json-schema.org/draft/2020-12/schema",
-    #         "title": "JSON Schema of 'allOf' with defaults",
-    #         "type": "object",
-    #         "allOf": [
-    #             {
-    #                 "if": {"properties": {"someString": {"const": "abc"}}},
-    #                 "then": {"properties": {
-    #                     "conditionalNumber": {"type": "number", "default": 69},
-    #                 }}
-    #             },
-    #             {
-    #                 "if": {"properties": {"someString": {"const": "xyz"}}},
-    #                 "then": {"properties": {
-    #                     "conditionalObject": {
-    #                         "type": "object",
-    #                         "default": {
-    #                             "someString": "goodbye",
-    #                             "someNumber": -100
-    #                         }
-    #                     }
-    #                 }}
-    #             }
-    #         ]
-    #     }
-    # },
+    "oneOf": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'oneOf' with defaults",
+            "type": "object",
+            "unevaluatedProperties": False,
+            "oneOf": [
+                {
+                    "additionalProperties": False,
+                    "properties": {
+                        "animal": {
+                            "enum": ["dog", "cat"]
+                        },
+                        "name": {
+                            "default": "Ralph"
+                        },
+                        "age": {
+                            "minimum": 0
+                        }
+                    }
+                },
+                {
+                    "additionalProperties": False,
+                    "properties": {
+                        "bicycle": {
+                            "enum": ["road", "mountain", "gravel"]
+                        },
+                        "sprockets": {
+                            "default": 9
+                        }
+                    }
+                }
+            ],
+        },
+        "instances": [
+            {  # First option, partial
+                "original": {
+                    "animal": "dog"
+                },
+                "expected": {
+                    "animal": "dog",
+                    "name": "Ralph"
+                }
+            },
+            {  # First option, full
+                "original": {
+                    "animal": "cat",
+                    "name": "Shadow",
+                    "age": 7
+                },
+                "expected": {
+                    "animal": "cat",
+                    "name": "Shadow",
+                    "age": 7
+                }
+            },
+            {  # Second option, partial
+                "original": {
+                    "bicycle": "road"
+                },
+                "expected": {
+                    "bicycle": "road",
+                    "sprockets": 9
+                }
+            },
+            {  # Second option, full
+                "original": {
+                    "bicycle": "gravel",
+                    "sprockets": 12
+                },
+                "expected": {
+                    "bicycle": "gravel",
+                    "sprockets": 12
+                }
+            },
+        ]
+    },
+    "anyOf": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'anyOf' with defaults",
+            "type": "object",
+            "anyOf": [
+                {
+                    "if": {"properties": {
+                        "someInteger": {"multipleOf": 2}
+                    }},
+                    "then": {"properties": {
+                        "message1": {"default": "Multiple of 2"}
+                    }},
+                },
+                {
+                    "if": {"properties": {
+                        "someInteger": {"multipleOf": 3}
+                    }},
+                    "then": {"properties": {
+                        "message2": {"default": "Multiple of 3"}
+                    }},
+                },
+                {
+                    "if": {"properties": {
+                        "someInteger": {"multipleOf": 5}
+                    }},
+                    "then": {"properties": {
+                        "message3": {"default": "Multiple of 5"}
+                    }},
+                },
+            ]
+        },
+        "instances": [
+            {  # None of
+                "original": {
+                    "someInteger": 7
+                },
+                "expected": {
+                    "someInteger": 7
+                }
+            },
+            {  # Some of
+                "original": {
+                    "someInteger": 6
+                },
+                "expected": {
+                    "someInteger": 6,
+                    "message1": "Multiple of 2",
+                    "message2": "Multiple of 3"
+                },
+            },
+            {  # All of
+                "original": {
+                    "someInteger": 30,
+                    "message2": "Multiple of 3!!!!!!!",
+                },
+                "expected": {
+                    "someInteger": 30,
+                    "message1": "Multiple of 2",
+                    "message2": "Multiple of 3!!!!!!!",
+                    "message3": "Multiple of 5",
+                },
+            },
+        ]
+    },
 }
 
 
