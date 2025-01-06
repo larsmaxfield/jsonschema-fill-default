@@ -7,6 +7,9 @@ from jsonschema_fill_default import fill_default
 
 
 def main():
+    # TODO: Rewrite examples with test examples for clarity
+    # TODO: Readme examples from simple to complex, with section "Using $refs?"
+
     # schema_filename = 'allof.example.schema.json'
     # instance = {
     #     "someString": "AAA"
