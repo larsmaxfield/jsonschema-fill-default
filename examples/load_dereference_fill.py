@@ -23,14 +23,12 @@ def main():
     protocols.Validator.check_schema(schema)
     validate(instance, schema)
 
-    # De-reference schema before using it to fill defaults
-    # jsonref.replace_refs replaces "$refs" in a schema with the referenced
-    # schemas themselves. Assigning its return immediately evaluates it and
-    # returns a deep copy.
+    # De-reference schema "$refs"
+    # Assign jsonref.replace_refs return to immediately evaluate and get copy.
     schema = replace_refs(schema)
 
     # Fill instance with schema defaults
-    # fill_default mutates the instance, so we don't assign its return
+    # fill_default mutates the instance, so we don't assign its return.
     print(f"Original instance:\n{instance}\n")
     fill_default(instance, schema)
     validate(instance, schema)
