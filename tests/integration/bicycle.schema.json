@@ -1,0 +1,52 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Example JSON Schema of a bicycle",
+    "type": "object",
+    "properties": {
+        "style": { "enum": ["road", "city"] },
+        "color": { "type": "string", "default": "blue" },
+        "tire-width": { "$ref": "#/$defs/tire-width" },
+        "front-brake": { "type": "boolean"},
+        "rear-brake": { "type": "boolean", "default": true}
+    },
+    "additionalProperties": false,
+    "unevaluatedProperties": false,
+    "required": ["style"],
+    "allOf": [
+        {
+            "if": { "properties": { "style": {"const": "road"} } },
+            "then": { "$ref": "#/$defs/roadBicycle" }
+        },
+        {
+            "if": { "properties": { "style": {"const": "city"} } },
+            "then": { "$ref": "#/$defs/cityBicycle" }
+        }
+    ],
+    "$defs": {
+        "tire-width": {
+            "title": "Tire width in millimeters",
+            "type": "integer",
+            "minimum": 18
+        },
+        "roadBicycle": {
+            "type": "object",
+            "properties": {
+                "tire-width": {
+                    "default": 25,
+                    "maximum": 30
+                },
+                "front-brake": { "default": true}
+            }
+        },
+        "cityBicycle": {
+            "type": "object",
+            "properties": {
+                "tire-width": {
+                    "default": 38,
+                    "maximum": 42
+                },
+                "front-brake": { "default": false}
+            }
+        }
+    }
+}
