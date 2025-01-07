@@ -3,7 +3,7 @@
 Fill a JSON instance in Python with the missing defaults from its [JSON Schema](https://json-schema.org/)-valid schema.
 
 ```python
-from jsonschema_fill_default import fill_defaults
+from jsonschema_fill_default import fill_default
 
 schema = {
     "properties": {
@@ -14,10 +14,10 @@ schema = {
 
 instance = {"text": "Goodbye"}
 
-fill_defaults(instance, schema)
+fill_default(instance, schema)
 ```
 ```python
->>> print(instance)
+>>> instance
 
 {
     "text": "Goodbye",
@@ -40,7 +40,7 @@ pip install jsonschema-fill-default
 
 - Works with `"properties"` `"allOf"`, `"anyOf"`, `"oneOf"`, and `"if-then(-else)"` keywords and all combinations thereof. See [examples](#examples) for details.
 
-- Verify your schema's overall default by filling an empty instance (`instance={}`).
+- Verify a schema's global default by filling an empty instance `={}`, if the schema allows it.
 
 - Mutates the input instance.
 
@@ -54,9 +54,9 @@ pip install jsonschema-fill-default
 
 ### Load, validate, dereference, and fill
 
-```python
-# examples/load_dereference_fill.py (abridged)
+See unabridged script at [examples/load_validate_dereference_fill.py](https://github.com/larsmaxfield/jsonschema-fill-default/blob/main/examples/load_validate_dereference_fill.py)
 
+```python
 import json
 
 from jsonschema import validate, protocols
@@ -89,7 +89,7 @@ print(f"\nFilled:\n{json.dumps(instance, indent=4)}")
 ### Nested defaults
 
 ```python
-from jsonschema_fill_default import fill_defaults
+from jsonschema_fill_default import fill_default
 
 schema = {
     "properties": {
@@ -127,7 +127,7 @@ fill_default(instance, schema)
 ### Conditional properties with defaults with `"if-then"`
 
 ```python
-from jsonschema_fill_default import fill_defaults
+from jsonschema_fill_default import fill_default
 
 schema = {
     "properties": {"someNumber": {"default": 100}},
@@ -142,17 +142,17 @@ schema = {
 without_bool = {}
 with_bool = {"someBoolean": True}
 
-fill_defaults(without_bool, schema)
-fill_defaults(with_bool, schema)
+fill_default(without_bool, schema)
+fill_default(with_bool, schema)
 ```
 ```python
->>> print(without_bool)
+>>> without_bool
 
 {
     "someNumber": 100
 }
 
->>> print(with_bool)
+>>> with_bool
 
 {
     "someNumber": 100,
@@ -165,7 +165,7 @@ fill_defaults(with_bool, schema)
 ### Conditional defaults with `"if-then-else"`
 
 ```python
-from jsonschema_fill_default import fill_defaults
+from jsonschema_fill_default import fill_default
 
 schema = {
     "if": {
@@ -193,37 +193,36 @@ none = {}
 odd = {"someInteger": 3}
 even = {"someInteger": 4}
 
-fill_defaults(none, schema)
-fill_defaults(odd, schema)
-fill_defaults(even, schema)
+fill_default(none, schema)
+fill_default(odd, schema)
+fill_default(even, schema)
 ```
 ```python
->>> print(none)
+>>> none
 
 {
     "conditionalString": "No integer given"
 }
 
->>> print(odd)
+>>> odd
 
 {
     "someInteger": 3,
     "conditionalString": "Odd integer"
 }
 
->>> print(even)
+>>> even
 
 {
     "someInteger": 4,
     "conditionalString": "Even integer"
 }
-
 ```
 
 ### Different properties and defaults with `"oneOf"`
 
 ```python
-from jsonschema_fill_default import fill_defaults
+from jsonschema_fill_default import fill_default
 
 schema = {
     "unevaluatedProperties": False,
@@ -254,18 +253,18 @@ schema = {
 A = {"food": "cake"}
 B = {"activity": "eat"}
 
-fill_defaults(A, schema)
-fill_defaults(B, schema)
+fill_default(A, schema)
+fill_default(B, schema)
 ```
 ```python
->>> print(A)
+>>> A
 
 {
     "food": "cake",
     "price": 9.95
 }
 
->>> print(B)
+>>> B
 
 {
     "activity": "eat",
