@@ -1,5 +1,5 @@
 import pytest
-from jsonschema import validate, Draft202012Validator
+from jsonschema import validate, protocols
 from jsonschema_fill_default import fill_default
 
 
@@ -363,7 +363,7 @@ for test in test_schemas_instances.values():
     schemas
 )
 def test_schema_is_valid_meta_schema(schema):
-    assert Draft202012Validator.check_schema(schema) is None
+    assert protocols.Validator.check_schema(schema) is None
 
 
 # All instances must be valid to their schema

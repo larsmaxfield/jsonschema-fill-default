@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
-from jsonschema import validate, Draft202012Validator
+from jsonschema import validate, protocols
 from jsonref import replace_refs
 from jsonschema_fill_default import fill_default
 
@@ -44,7 +44,7 @@ def test_load_dereference_fill(schema_filename, instance, expected):
         schema = json.load(file)
 
     # Validate schema and validate instance against schema
-    Draft202012Validator.check_schema(schema)
+    protocols.Validator.check_schema(schema)
     validate(instance, schema)
 
     # De-reference schema before using it to fill defaults
