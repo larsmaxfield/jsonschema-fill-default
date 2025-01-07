@@ -317,33 +317,35 @@ conda activate ./env
 
 ### Paradigms
 
-#### This uses `__init__.py` to declare a 'public' API for the module
+#### Use the top-level `__init__.py` to declare a 'public' API for the module
 
 _From [this post](https://www.reddit.com/r/Python/comments/1bbbwk/comment/c95cjs5/) by reostra:_
 
-For example, having
-
-```
-stuff/
-  __init__.py
-  bigstuff.py
-    Stuffinator()
-    Stuffinatrix()
-  privateStuff.py
-```
-
-where **init**.py contains
-
-```
-from .bigstuff import Stuffinator, Stuffinatrix
-```
-
-and thereby users can import those with
-
-```
-from stuff import Stuffinator, Stuffinatrix
-```
-
-which essentially says that stuff.Stuffinator and stuff.Stuffinatrix are the only parts of the module intended for public use.
-While there's nothing stopping people from doing an 'import stuff.bigstuff.Stuffometer' or 'import stuff.privateStuff.HiddenStuff', they'll at least know they're peeking behind the curtain at that point.
-Rather than being implicit, I find it's rather explicit.
+> For example, having
+> 
+> ```
+> stuff/
+>   __init__.py
+>   bigstuff.py
+>     Stuffinator()
+>     Stuffinatrix()
+>   privateStuff.py
+> ```
+> 
+> where **init**.py contains
+> 
+> ```
+> from .bigstuff import Stuffinator, Stuffinatrix
+> ```
+> 
+> and thereby users can import those with
+> 
+> ```
+> from stuff import Stuffinator, Stuffinatrix
+> ```
+> 
+> which essentially says that stuff.Stuffinator and stuff.Stuffinatrix are the only parts of the module intended for public use.
+> 
+> While there's nothing stopping people from doing an 'import stuff.bigstuff.Stuffometer' or 'import stuff.privateStuff.HiddenStuff', they'll at least know they're peeking behind the curtain at that point.
+> 
+> Rather than being implicit, I find it's rather explicit.
