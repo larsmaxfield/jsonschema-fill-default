@@ -5,9 +5,9 @@
     "properties": {
         "style": { "enum": ["road", "city"] },
         "color": { "type": "string", "default": "blue" },
-        "tire-width": { "$ref": "#/$defs/tire-width" },
         "front-brake": { "type": "boolean"},
-        "rear-brake": { "type": "boolean", "default": true}
+        "rear-brake": { "type": "boolean", "default": true},
+        "tire": { "$ref": "#/$defs/tire" }
     },
     "additionalProperties": false,
     "unevaluatedProperties": false,
@@ -23,29 +23,52 @@
         }
     ],
     "$defs": {
-        "tire-width": {
-            "title": "Tire width in millimeters",
-            "type": "integer",
-            "minimum": 18
+        "tire": {
+            "title": "ETRTO tire specification",
+            "properties": {
+                "width": {
+                    "title": "Width of the tire in millimeters",
+                    "type": "integer",
+                    "minimum": 18
+                },
+                "inner-diameter": {
+                    "title": "Inner diameter of the tire in millimeters",
+                    "type": "integer"
+                }
+            }
         },
         "roadBicycle": {
             "type": "object",
             "properties": {
-                "tire-width": {
-                    "default": 25,
-                    "maximum": 30
-                },
-                "front-brake": { "default": true}
+                "front-brake": { "default": true},
+                "tire": {
+                    "properties": {
+                        "width": {
+                            "default": 25,
+                            "maximum": 30
+                        },
+                        "inner-diameter": {
+                            "default": 622
+                        }
+                    }
+                }
             }
         },
         "cityBicycle": {
             "type": "object",
             "properties": {
-                "tire-width": {
-                    "default": 38,
-                    "maximum": 42
-                },
-                "front-brake": { "default": false}
+                "front-brake": { "default": false},
+                "tire": {
+                    "properties": {
+                        "width": {
+                            "default": 38,
+                            "maximum": 42
+                        },
+                        "inner-diameter": {
+                            "default": 584
+                        }
+                    }
+                }
             }
         }
     }

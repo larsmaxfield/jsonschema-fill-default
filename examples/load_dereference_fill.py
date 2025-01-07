@@ -11,7 +11,10 @@ def main():
     schema_filename = "bicycle.schema.json"
     instance = {
         "style": "road",
-        "color": "red"
+        "color": "purple",
+        "tire": {
+            "width": 28
+        }
     }
 
     # Load schema
@@ -29,10 +32,10 @@ def main():
 
     # Fill instance with schema defaults
     # fill_default mutates the instance, so we don't assign its return.
-    print(f"Original instance:\n{instance}\n")
+    print(f"\nOriginal:\n{json.dumps(instance, indent=4)}")
     fill_default(instance, schema)
     validate(instance, schema)
-    print(f"Filled instance:\n{instance}\n")
+    print(f"\nFilled:\n{json.dumps(instance, indent=4)}")
 
 
 if __name__ == "__main__":

@@ -13,14 +13,20 @@ from jsonschema_fill_default import fill_default
         "bicycle.schema.json",
         {
             "style": "road",
-            "color": "red"
+            "color": "purple",
+            "tire": {
+                "width": 28
+            }
         },
         {
             "style": "road",
-            "color": "red",
-            "tire-width": 25,
-            "front-brake": True,
-            "rear-brake": True
+            "color": "purple",
+            "tire": {
+                "width": 28,
+                "inner-diameter": 622
+            },
+            "rear-brake": True,
+            "front-brake": True
         }
     )]
 )
