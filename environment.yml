@@ -1,9 +1,0 @@
-name: /Users/max/Developer/git/jsonschema_fill_default/env
-channels:
-  - https://repo.anaconda.com/pkgs/main
-  - https://repo.anaconda.com/pkgs/r
-dependencies:
-  - python>=3.9
-  - pip
-  - pip:
-    - poetry==1.8.5

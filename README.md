@@ -5,18 +5,25 @@ Fill a JSON instance with the defaults of the JSON Schema it is valid against
 
 ### Set up development environment with `conda` and `poetry`
 
+I use `conda` to create a virtual environment with Python, `pip`, and `poetry`.
+
+I then add the dependencies using `poetry install`, which automatically adds them to that `conda` environment.
+
+Here's how:
+
 #### 1. Clone the repo
 
-#### 2. Create and activate a virtual environment using `conda` with `environment.yml`
+#### 2. Create and activate a virtual environment using `conda`
 
-For example, create and activate a virtual environment `env` in the root of the project repo:
+For example, create and activate a virtual environment `env` in the root of the project repo using `requirements.dev.txt` as reference:
 ```
 cd /root/of/this/repo
-conda env create --file environment --prefix ./env
+conda env create --prefix ./env python=3.9
 conda activate ./env
+pip install poetry==1.8.5
 ```
-Why? I use `conda` to install Python, `pip`, and `poetry` into a virtual environment.
-Then I add the dependencies using `poetry install`, which automatically adds them to that `conda` environment.
+
+I don't use an `environment.yml` to solve and install the `conda` environment because it's typically slower than just running the above "manual" install.
 
 #### 3. Install `poetry` dependencies
 
@@ -27,6 +34,13 @@ poetry install
 #### 4. Use
 
 Once set up, you can use the development environment in the future by simply activating the `conda` environment.
+
+If you used the example above, that would be:
+
+```
+cd /root/of/this/repo
+conda activate ./env
+```
 
 
 ### Paradigms
