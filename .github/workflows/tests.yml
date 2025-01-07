@@ -8,7 +8,7 @@ on:
     branches:
     - main
 jobs:
-  integration-tests:
+  example:
     runs-on: ubuntu-latest
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
@@ -22,3 +22,20 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "This job's status is ${{ job.status }}."
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Poetry
+      run: |
+        pip install --upgrade pip
+        pip install poetry==1.8.5
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'poetry'
+    - name: Install dependencies
+      run: poetry install
+    - name: Run tests
+      run: pytest -vv
