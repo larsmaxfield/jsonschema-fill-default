@@ -1,5 +1,27 @@
-# jsonschema_fill_default
-Fill a JSON instance with the defaults of the JSON Schema it is valid against
+# jsonschema-fill-default
+
+Fill a JSON instance with the missing defaults from its [JSON Schema](https://json-schema.org/)-valid schema.
+
+```python
+from jsonschema_fill_default import fill_defaults
+
+instance = {"someString": "Goodbye"}
+schema = {
+  
+}
+```
+
+## Install
+
+`jsonschema-fill-default` is available on [`PyPI`](https://pypi.org/project/jsonschema-fill-default/). You can install using [`pip`](https://pip.pypa.io/en/stable/):
+
+```command
+pip install jsonschema-fill-default
+```
+
+
+## Examples
+
 
 ## Developers
 
