@@ -46,11 +46,45 @@ pip install jsonschema-fill-default
 
 - Built for the [Draft 2020-12](https://json-schema.org/draft/2020-12) JSON Schema.
 
-> [!IMPORTANT]
-> Instance must be valid to its schema and the schema itself must be a valid JSON Schema to properly fill defaults.
-
 
 ## Examples
+
+> [!IMPORTANT]
+> Instance must be valid to its schema, and the schema itself must be a valid JSON Schema.
+
+### Load, validate, dereference, and fill
+
+```python
+# examples/load_dereference_fill.py (abridged)
+
+import json
+
+from jsonschema import validate, protocols
+from jsonref import replace_refs
+from jsonschema_fill_default import fill_default
+
+
+schema_filename = "bicycle.schema.json"
+instance = {
+    "style": "road",
+    "color": "purple",
+    "tire": {
+        "width": 28
+    }
+}
+
+with open(schema_filename, 'r') as file:
+    schema = json.load(file)
+
+protocols.Validator.check_schema(schema)  # Validate schema
+validate(instance, schema)  # Validate instance against schema
+
+schema = replace_refs(schema) # De-reference schema "$refs"
+
+fill_default(instance, schema)  # Fill instance (mutates)
+
+print(f"\nFilled:\n{json.dumps(instance, indent=4)}")
+```
 
 ### Nested defaults
 
@@ -78,7 +112,7 @@ instance = {
 fill_default(instance, schema)
 ```
 ```python
->>> print(instance)
+>>> instance
 
 {
     "someString": "The default string",
