@@ -213,7 +213,8 @@ test_schemas_instances = {
                         "age": {
                             "minimum": 0
                         }
-                    }
+                    },
+                    "required": ["animal"]
                 },
                 {
                     "additionalProperties": False,
@@ -224,11 +225,12 @@ test_schemas_instances = {
                         "sprockets": {
                             "default": 9
                         }
-                    }
+                    },
+                    "required": ["bicycle"]
                 }
             ],
         },
-        "instances": [
+        "instances": [  # Empty is not allowed!
             {  # First option, partial
                 "original": {
                     "animal": "dog"
