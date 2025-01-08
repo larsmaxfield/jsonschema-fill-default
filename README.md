@@ -39,9 +39,20 @@ pip install jsonschema-fill-default
 
 ## Features
 
-- Works with `"if-then(-else)"`, `"allOf"`, `"anyOf"`, `"oneOf"`, and `"properties"` keywords and all combinations thereof. See [examples](#examples) for details.
+- Fills all missing defaults, including nested ones.
 
-- Recursively fills all missing defaults, including nested ones.
+- Works with the following keywords and any combination thereof:
+  - `"allOf"`
+  - `"anyOf"`
+  - `"oneOf"`
+  - `"dependentSchemas"`
+  - `"if-then(-else)"`
+  - `"prefixItems"`
+  - `"items"`
+  - `"properties"
+  See [examples](#examples) for details.
+
+- Uses the first applicable default if multiple defaults exist for a single property.
 
 - Helps you verify a schema's defaults.
 
