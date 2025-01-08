@@ -5,7 +5,14 @@ def fill_default(instance: dict, schema: dict):
     """Fill a JSON instance with schema defaults
 
     Recursively fills a JSON instance with the defaults of a schema with
-    keywords "properties", "if-then(-else)", "allOf", "anyOf", and "oneOf".
+    keywords:
+    - "properties",
+    - "if-then(-else)",
+    - "allOf",
+    - "anyOf",
+    - "oneOf",
+    - "dependentSchemas",
+    - "items", and
 
     Fills all nested structures.
 
@@ -31,6 +38,8 @@ def fill_default(instance: dict, schema: dict):
             _fill_oneof(instance, schema)
         if keyword == "dependentSchemas":
             _fill_dependentschemas(instance, schema)
+        if keyword == "items":
+            _fill_items(instance, schema)
     return None
 
 
@@ -69,8 +78,11 @@ def _fill_properties(instance: dict, schema: dict):
                 if default_key not in instance[_property]:
                     instance[_property][default_key] = \
                         subschema["default"][default_key]
-        if any(key in ["oneOf", "allOf", "anyOf", "if"] for key in subschema):
+        if any(key in ["oneOf", "allOf", "anyOf", "if", "dependentSchemas"] for key in subschema):
             fill_default(instance[_property], subschema)
+        if "items" in subschema:
+            if _property in instance:  # Instance must have array to fill
+                fill_default(instance[_property], subschema)
     return None
 
 
@@ -167,6 +179,26 @@ def _fill_dependentschemas(instance: dict, schema: dict):
     for _property, subschema in schema["dependentSchemas"].items():
         if _property in instance:
             fill_default(instance, subschema)
+    return None
+
+
+def _fill_items(instance: list, schema: dict):
+    """Recursively fill a list of items with schema "items" defaults
+
+    Fills all nested structures.
+
+    Mutates the instance input items, so None is returned.
+
+    Args:
+        instance (array): List of items valid against the given schema
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
+            "items" keyword
+
+    Returns:
+        None
+    """
+    for item in instance:
+        fill_default(item, schema["items"])
     return None
 
 

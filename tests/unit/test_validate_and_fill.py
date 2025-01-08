@@ -427,6 +427,85 @@ test_schemas_instances = {
             },
         ]
     },
+    "items": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'items' with defaults",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "preference": {
+                        "enum": ["vegan", "vegetarian", "none"],
+                        "default": "vegan"
+                    },
+                    "baggage": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "bag": {"type": "string"},
+                                "checked": {"type": "boolean", "default": False}
+                            }
+                        }
+                    },
+                    "favorite_numbers": {
+                        "type": "array",
+                        "items": {"type": "integer"}
+                    }
+                },
+                "required": ["name"]
+            }
+        },
+        "instances": [
+            {  # Mixed full
+                "original": [
+                    {
+                        "name": "Charlie",
+                    },
+                    {
+                        "name": "Kelly",
+                        "favorite_numbers": [0, 1, 1, 2, 3, 5, 8, 13]
+                    },
+                    {
+                        "name": "Laura",
+                        "preference": "vegetarian"
+                    },
+                    {
+                        "name": "John",
+                        "baggage": [
+                            {"bag": "backpack"},
+                            {"bag": "suitcase", "checked": True}
+                        ]
+                    }
+                ],
+                "expected": [
+                    {
+                        "name": "Charlie",
+                        "preference": "vegan"
+                    },
+                    {
+                        "name": "Kelly",
+                        "favorite_numbers": [0, 1, 1, 2, 3, 5, 8, 13],
+                        "preference": "vegan"
+                    },
+                    {
+                        "name": "Laura",
+                        "preference": "vegetarian"
+                    },
+                    {
+                        "name": "John",
+                        "preference": "vegan",
+                        "baggage": [
+                            {"bag": "backpack", "checked": False},
+                            {"bag": "suitcase", "checked": True}
+                        ]
+                    }
+                ],
+            }
+        ]
+    },
     "conflictingDefaultBad": {
         "schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
