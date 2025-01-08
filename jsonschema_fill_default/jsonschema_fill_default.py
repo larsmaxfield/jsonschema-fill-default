@@ -20,12 +20,12 @@ def fill_default(instance: dict, schema: dict):
     """
     if "properties" in schema:
         _fill_properties(instance, schema)
-    if "if" in schema:
-        _fill_ifthenelse(instance, schema)
     if "allOf" in schema:
         _fill_allof(instance, schema)
     if "anyOf" in schema:
         _fill_anyof(instance, schema)
+    if "if" in schema:
+        _fill_ifthenelse(instance, schema)
     if "oneOf" in schema:
         _fill_oneof(instance, schema)
     return None
