@@ -18,16 +18,17 @@ def fill_default(instance: dict, schema: dict):
     Returns:
         instance (dict): Mutated filled instance (not a copy).
     """
-    if "properties" in schema:
-        _fill_properties(instance, schema)
-    if "allOf" in schema:
-        _fill_allof(instance, schema)
-    if "anyOf" in schema:
-        _fill_anyof(instance, schema)
-    if "if" in schema:
-        _fill_ifthenelse(instance, schema)
-    if "oneOf" in schema:
-        _fill_oneof(instance, schema)
+    for keyword in schema:  # Apply keywords in order for predictable defaults
+        if keyword == "properties":
+            _fill_properties(instance, schema)
+        if keyword == "allOf":
+            _fill_allof(instance, schema)
+        if keyword == "anyOf":
+            _fill_anyof(instance, schema)
+        if keyword == "if":
+            _fill_ifthenelse(instance, schema)
+        if keyword == "oneOf":
+            _fill_oneof(instance, schema)
     return None
 
 
