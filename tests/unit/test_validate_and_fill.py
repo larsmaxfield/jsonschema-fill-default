@@ -506,10 +506,10 @@ test_schemas_instances = {
             }
         ]
     },
-    "prefixItems": {
+    "prefixItemsAndItems": {
         "schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
-            "title": "JSON Schema of 'prefixItems' with defaults",
+            "title": "JSON Schema of 'prefixItems' and 'items' with defaults",
             "type": "array",
             "prefixItems": [
                 {"type": "number"},
@@ -520,33 +520,81 @@ test_schemas_instances = {
                 "type": "object",
                 "properties": {
                     "name": {"type": "string"},
-                    "age": {"type": "integer", "default": 12}
+                    "age": {"type": "integer", "default": 11}
                 },
                 "required": ["name"]
             }
         },
         "instances": [
-            {  # Don't fill! Why? Not all non-default were reached.
-                # Or rather, defaults are only filled if you make it
+            {   # Missing prefixItems are only filled if there are only
+                # default-resolving prefixItem schemas remaining.
                 "original": [4],
                 "expected": [4]
             },
-            {  # Fill!
+            {  # Only default-resolving prefixes remaining, so they are filled.
                 "original": [4, "Privet"],
                 "expected": [4, "Privet", "Drive"]
             },
-            {  # Full
-                "original": [4, "Privet", "Drive", {"name": "Harry"}],
-                "expected": [4, "Privet", "Drive", {"name": "Harry", "age": 12}]
+            {  # All prefixItems with incomplete items
+                "original": [4, "Privet", "Drive", {"name": "Harry"}, {"name": "Dudley", "age": 10}],
+                "expected": [4, "Privet", "Drive", {"name": "Harry", "age": 11}, {"name": "Dudley", "age": 10}]
             },
-            {  # Full
-                "original": [4, "Privet", "Drive", {"name": "Harry"}, {"name": "Dudley"}],
-                "expected": [4, "Privet", "Drive", {"name": "Harry", "age": 12}, {"name": "Dudley", "age": 12}]
-            },
-            {  # Minimum
+            {  # Only prefixItems
                 "original": [1428, "Elm", "Street"],
                 "expected": [1428, "Elm", "Street"]
             },
+        ]
+    },
+    "prefixItems": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'prefixItems' with defaults",
+            "type": "array",
+            "prefixItems": [
+                {"type": "string"},
+                {
+                    "properties": {
+                        "carry-on": {"type": "string"},
+                        "size": {"type": "array", "default": [0.5, 0.4, 0.3]}
+                    }
+                },
+                {
+                    "properties": {
+                        "personal-bag": {"type": "string"},
+                        "weight": {"type": "integer", "default": 9}
+                    }
+                },
+            ]
+        },
+        "instances": [
+            {   # prefixItems are filled
+                "original": [
+                    "John",
+                    {"carry-on": "duffel"},
+                    {"personal-bag": "purse", "weight": 2}
+                ],
+                "expected": [
+                    "John",
+                    {"carry-on": "duffel", "size": [0.5, 0.4, 0.3]},
+                    {"personal-bag": "purse", "weight": 2}
+                ]
+            },
+            {   # Missing prefixItems are only filled if there are only
+                # default-resolving prefixItem schemas remaining.
+                "original": [],
+                "expected": []
+            },
+            {   # Default-resolving prefixItems will fill if all remaining
+                # prefixItems are default-resolving!
+                "original": [
+                    "John"
+                ],
+                "expected": [
+                    "John",
+                    {"size": [0.5, 0.4, 0.3]},
+                    {"weight": 9}
+                ]
+            }
         ]
     },
     "conflictingDefaultBad": {
