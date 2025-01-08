@@ -506,6 +506,41 @@ test_schemas_instances = {
             }
         ]
     },
+    # "prefixItems": {
+    #     "schema": {
+    #         "$schema": "https://json-schema.org/draft/2020-12/schema",
+    #         "title": "JSON Schema of 'prefixItems' with defaults",
+    #         "type": "array",
+    #         "prefixItems": [
+    #             {"type": "number"},
+    #             {"type": "string"},
+    #             {"enum": ["Street", "Avenue", "Drive"], "default": "Street"}
+    #         ],
+    #         "items": {
+    #             "type": "object",
+    #             "properties": {
+    #                 "name": {"type": "string"},
+    #                 "age": {"type": "integer", "default": 42}
+    #             },
+    #             "required": ["name"]
+    #         }
+    #     },
+    #     "instances": [
+    #         {  # Don't fill! Why? Not all non-default were reached.
+    #             # Or rather, defaults are only filled if you make it
+    #             "original": [4],
+    #             "expected": [4]
+    #         },
+    #         {  # Minimum
+    #             "original": [1428, "Elm"],
+    #             "expected": [1428, "Elm", "Street"]
+    #         },
+    #         {  # Minimum
+    #             "original": [4, "Privet", "Drive"],
+    #             "expected": [4, "Privet", "Drive"]
+    #         }
+    #     ]
+    # },
     "conflictingDefaultBad": {
         "schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -577,7 +612,6 @@ test_schemas_instances = {
                 }
             }
         ]
-    
     },
 }
 
