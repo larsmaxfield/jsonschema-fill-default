@@ -1,7 +1,9 @@
+from typing import Union
+
 from jsonschema import validate, ValidationError
 
 
-def fill_default(instance: dict, schema: dict):
+def fill_default(instance: Union[dict, list], schema: dict) -> Union[dict, list]:
     """Fill a JSON instance with schema defaults
 
     Recursively fills a JSON instance with the defaults of a schema with
@@ -13,17 +15,18 @@ def fill_default(instance: dict, schema: dict):
     - "oneOf",
     - "dependentSchemas",
     - "items", and
+    - "prefixItems".
 
     Fills all nested structures.
 
     Mutates the instance input, so None is returned.
 
     Args:
-        instance (dict): JSON instance valid against the given schema
+        instance (dict, list): JSON instance valid against the given schema
         schema (dict): JSON schema adhering to Draft 2020-12
 
     Returns:
-        instance (dict): Mutated filled instance (not a copy).
+        instance (dict, list): Mutated filled instance (not a copy).
     """
     for keyword in schema:  # Apply keywords in order for predictable defaults
         if keyword == "properties":
@@ -38,8 +41,28 @@ def fill_default(instance: dict, schema: dict):
             _fill_oneof(instance, schema)
         if keyword == "dependentSchemas":
             _fill_dependentschemas(instance, schema)
-        if keyword == "items":
-            _fill_items(instance, schema)
+    if isinstance(instance, list):  # Handle "(prefix)Items" for lists (arrays)
+        # Get quantities
+        n_instance = len(instance)
+        n_schema_prefixitems = 0
+        n_schema_non_default_prefixitems = 0
+        if "prefixItems" in schema:
+            n_schema_prefixitems = len(schema["prefixItems"])
+
+            # Find number of non-continuously-default prefixItems by looping
+            # in reverse until default is not found in that prefixItem.
+            n_schema_non_default_prefixitems = n_schema_prefixitems
+            for prefixitem in reversed(schema["prefixItems"]):
+                if "default" in prefixitem:
+                    n_schema_non_default_prefixitems -= 1
+                else:
+                    break
+        n_instance_items = n_instance - n_schema_prefixitems
+        if n_instance_items > 0:
+            if "items" in schema:
+                _fill_items(instance[-n_instance_items:], schema)
+        elif n_instance >= n_schema_non_default_prefixitems:
+            print(instance[n_schema_non_default_prefixitems:n_schema_prefixitems])
     return None
 
 
