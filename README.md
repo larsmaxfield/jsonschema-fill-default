@@ -27,6 +27,8 @@ fill_default(instance, schema)  # Mutates instance!
 
 > [!CAUTION]
 > Filled instances are not automatically validated.
+>
+> See [Load, validate, deference, fill](#load-validate-dereference-fill) for how you can validate instances and schemas.
 
 
 ## Install
@@ -61,8 +63,6 @@ See [examples](#examples) for showcasing of these features:
 > - The instance must already be valid to its schema.
 > - The schema itself must be a valid [Draft 2020-12](https://json-schema.org/draft/2020-12) [JSON Schema](https://json-schema.org/).
 > - The filled instance is **not automatically validated**.
->
-> See [Load, validate, deference, fill](#load-validate-dereference-fill) for how you can validate instances and schemas.
 
 
 ## Examples
