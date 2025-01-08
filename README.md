@@ -39,9 +39,12 @@ pip install jsonschema-fill-default
 
 ## Features
 
+See [examples](#examples) for showcasing of these features:
+
 - Fills all missing defaults, including nested ones.
 
 - Works with the following keywords and any combination thereof:
+  - `"properties"`
   - `"allOf"`
   - `"anyOf"`
   - `"oneOf"`
@@ -49,8 +52,6 @@ pip install jsonschema-fill-default
   - `"if-then(-else)"`
   - `"prefixItems"`
   - `"items"`
-  - `"properties"
-  See [examples](#examples) for details.
 
 - Uses the first applicable default if multiple defaults exist for a single property.
 
