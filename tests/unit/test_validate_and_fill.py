@@ -338,6 +338,337 @@ test_schemas_instances = {
             },
         ]
     },
+    "dependentSchemas": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'dependentSchemas' with defaults",
+            "type": "object",
+            "properties": {
+                "snack": {"type": "string"},
+                "dessert": {"type": "string"}
+            },
+            "required": ["snack"],
+            "dependentSchemas": {
+                "dessert": {
+                    "properties": {
+                        "utensil": {"enum": ["Spoon", "Fork"], "default": "Fork"},
+                        "coffee": {"type": "string"}
+                    },
+                    "dependentSchemas": {
+                        "coffee": {
+                            "properties": {
+                                "mint": {"type": "boolean", "default": True},
+                            },
+                        }
+                    }
+                }
+            }
+        },
+        "instances": [
+            {  # Empty
+                "original": {
+                    "snack": "Popcorn"
+                },
+                "expected": {
+                    "snack": "Popcorn"
+                }
+            },
+            {  # Partial
+                "original": {
+                    "snack": "Popcorn",
+                    "coffee": "Americano"
+                },
+                "expected": {
+                    "snack": "Popcorn",
+                    "coffee": "Americano"
+                }
+            },
+            {  # Partial
+                "original": {
+                    "snack": "Popcorn",
+                    "dessert": "Cake"
+                },
+                "expected": {
+                    "snack": "Popcorn",
+                    "dessert": "Cake",
+                    "utensil": "Fork"
+                },
+            },
+            {  # Partial
+                "original": {
+                    "snack": "Popcorn",
+                    "dessert": "Ice Cream",
+                    "utensil": "Spoon",
+                    "coffee": "Espresso"
+                },
+                "expected": {
+                    "snack": "Popcorn",
+                    "dessert": "Ice Cream",
+                    "utensil": "Spoon",
+                    "coffee": "Espresso",
+                    "mint": True
+                },
+            },
+            {  # Full
+                "original": {
+                    "snack": "Popcorn",
+                    "dessert": "Ice Cream",
+                    "utensil": "Spoon",
+                    "coffee": "Flat White",
+                    "mint": False
+                },
+                "expected": {
+                    "snack": "Popcorn",
+                    "dessert": "Ice Cream",
+                    "utensil": "Spoon",
+                    "coffee": "Flat White",
+                    "mint": False
+                },
+            },
+        ]
+    },
+    "items": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'items' with defaults",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "preference": {
+                        "enum": ["vegan", "vegetarian", "none"],
+                        "default": "vegan"
+                    },
+                    "baggage": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "bag": {"type": "string"},
+                                "checked": {"type": "boolean", "default": False}
+                            }
+                        }
+                    },
+                    "favorite_numbers": {
+                        "type": "array",
+                        "items": {"type": "integer"}
+                    }
+                },
+                "required": ["name"]
+            }
+        },
+        "instances": [
+            {  # Mixed full
+                "original": [
+                    {
+                        "name": "Charlie",
+                    },
+                    {
+                        "name": "Kelly",
+                        "favorite_numbers": [0, 1, 1, 2, 3, 5, 8, 13]
+                    },
+                    {
+                        "name": "Laura",
+                        "preference": "vegetarian"
+                    },
+                    {
+                        "name": "John",
+                        "baggage": [
+                            {"bag": "backpack"},
+                            {"bag": "suitcase", "checked": True}
+                        ]
+                    }
+                ],
+                "expected": [
+                    {
+                        "name": "Charlie",
+                        "preference": "vegan"
+                    },
+                    {
+                        "name": "Kelly",
+                        "favorite_numbers": [0, 1, 1, 2, 3, 5, 8, 13],
+                        "preference": "vegan"
+                    },
+                    {
+                        "name": "Laura",
+                        "preference": "vegetarian"
+                    },
+                    {
+                        "name": "John",
+                        "preference": "vegan",
+                        "baggage": [
+                            {"bag": "backpack", "checked": False},
+                            {"bag": "suitcase", "checked": True}
+                        ]
+                    }
+                ],
+            }
+        ]
+    },
+    "prefixItemsAndItems": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'prefixItems' and 'items' with defaults",
+            "type": "array",
+            "prefixItems": [
+                {"type": "number"},
+                {"type": "string"},
+                {"enum": ["Street", "Avenue", "Drive"], "default": "Drive"}
+            ],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                    "age": {"type": "integer", "default": 11}
+                },
+                "required": ["name"]
+            }
+        },
+        "instances": [
+            {   # Missing prefixItems are only filled if there are only
+                # default-resolving prefixItem schemas remaining.
+                "original": [4],
+                "expected": [4]
+            },
+            {  # Only default-resolving prefixes remaining, so they are filled.
+                "original": [4, "Privet"],
+                "expected": [4, "Privet", "Drive"]
+            },
+            {  # All prefixItems with incomplete items
+                "original": [4, "Privet", "Drive", {"name": "Harry"}, {"name": "Dudley", "age": 10}],
+                "expected": [4, "Privet", "Drive", {"name": "Harry", "age": 11}, {"name": "Dudley", "age": 10}]
+            },
+            {  # Only prefixItems
+                "original": [1428, "Elm", "Street"],
+                "expected": [1428, "Elm", "Street"]
+            },
+        ]
+    },
+    "prefixItems": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'prefixItems' with defaults",
+            "type": "array",
+            "prefixItems": [
+                {"type": "string"},
+                {
+                    "properties": {
+                        "carry-on": {"type": "string"},
+                        "size": {"type": "array", "default": [0.5, 0.4, 0.3]}
+                    }
+                },
+                {
+                    "properties": {
+                        "personal-bag": {"type": "string"},
+                        "weight": {"type": "integer", "default": 9}
+                    }
+                },
+            ]
+        },
+        "instances": [
+            {   # prefixItems are filled
+                "original": [
+                    "John",
+                    {"carry-on": "duffel"},
+                    {"personal-bag": "purse", "weight": 2}
+                ],
+                "expected": [
+                    "John",
+                    {"carry-on": "duffel", "size": [0.5, 0.4, 0.3]},
+                    {"personal-bag": "purse", "weight": 2}
+                ]
+            },
+            {   # Missing prefixItems are only filled if there are only
+                # default-resolving prefixItem schemas remaining.
+                "original": [],
+                "expected": []
+            },
+            {   # Default-resolving prefixItems will fill if all remaining
+                # prefixItems are default-resolving!
+                "original": [
+                    "John"
+                ],
+                "expected": [
+                    "John",
+                    {"size": [0.5, 0.4, 0.3]},
+                    {"weight": 9}
+                ]
+            }
+        ]
+    },
+    "conflictingDefaultBad": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'dependentSchemas' with conflicting defaults",
+            "type": "object",
+            "properties": {
+                "claim": {"type": "string"},
+                "claim_exists": {"type": "boolean", "default": False}
+            },
+            "dependentSchemas": {
+                "claim": {
+                    "properties": {
+                        "claim_exists": {"default": True}
+                    }
+                }
+            }
+        },
+        "instances": [
+            {  # Empty
+                "original": {
+                },
+                "expected": {
+                    "claim_exists": False
+                }
+            },
+            {  # Partial
+                "original": {
+                    "claim": "Sky is blue"
+                },
+                "expected": {
+                    "claim": "Sky is blue",
+                    "claim_exists": False
+                }
+            }
+        ]
+    },
+    "conflictingDefaultGood": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'dependentSchemas' with conflicting defaults",
+            "type": "object",
+            "dependentSchemas": {
+                "claim": {
+                    "properties": {
+                        "claim_exists": {"default": True}
+                    }
+                }
+            },
+            "properties": {
+                "claim": {"type": "string"},
+                "claim_exists": {"type": "boolean", "default": False}
+            }
+        },
+        "instances": [
+            {  # Empty
+                "original": {
+                },
+                "expected": {
+                    "claim_exists": False
+                }
+            },
+            {  # Partial
+                "original": {
+                    "claim": "Sky is blue"
+                },
+                "expected": {
+                    "claim": "Sky is blue",
+                    "claim_exists": True
+                }
+            }
+        ]
+    },
 }
 
 
@@ -360,7 +691,7 @@ for test in test_schemas_instances.values():
 
 
 # All schemas must be valid to their meta-schema
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     "schema",
     schemas
 )
@@ -369,7 +700,7 @@ def test_schema_is_valid_meta_schema(schema):
 
 
 # All instances must be valid to their schema
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     "instance, schema",
     instance_schema_pairs
 )
@@ -378,7 +709,7 @@ def test_instance_is_valid_schema(instance, schema):
 
 
 # All filled instances must equal their expected
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     "original, schema, expected",
     original_schema_expected_triplets
 )

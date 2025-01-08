@@ -1,6 +1,6 @@
 # jsonschema-fill-default
 
-Fill a JSON instance in Python with the missing defaults from its [JSON Schema](https://json-schema.org/)-valid schema.
+Fill a JSON instance in Python with the missing defaults from its [JSON Schema](https://json-schema.org/) [Draft 2020-12](https://json-schema.org/draft/2020-12)-valid schema.
 
 ```python
 from jsonschema_fill_default import fill_default
@@ -14,7 +14,7 @@ schema = {
 
 instance = {"text": "Goodbye"}
 
-fill_default(instance, schema)
+fill_default(instance, schema)  # Mutates instance!
 ```
 ```python
 >>> instance
@@ -24,6 +24,9 @@ fill_default(instance, schema)
     "font": 12
 }
 ```
+
+> [!CAUTION]
+> Filled instances are not automatically validated.
 
 
 ## Install
@@ -36,25 +39,37 @@ pip install jsonschema-fill-default
 
 ## Features
 
-- Recursively fills all missing defaults, including nested ones.
+- Fills all missing defaults, including nested ones.
 
-- Works with `"properties"` `"allOf"`, `"anyOf"`, `"oneOf"`, and `"if-then(-else)"` keywords and all combinations thereof. See [examples](#examples) for details.
+- Works with the following keywords and any combination thereof:
+  - `"allOf"`
+  - `"anyOf"`
+  - `"oneOf"`
+  - `"dependentSchemas"`
+  - `"if-then(-else)"`
+  - `"prefixItems"`
+  - `"items"`
+  - `"properties"
+  See [examples](#examples) for details.
 
-- Verify a schema's global default by filling an empty instance `={}`, if the schema allows it.
+- Uses the first applicable default if multiple defaults exist for a single property.
 
-- Mutates the input instance.
+- Helps you verify a schema's defaults.
 
-- Built for the [Draft 2020-12](https://json-schema.org/draft/2020-12) JSON Schema.
+> [!IMPORTANT]
+> - The instance must already be valid to its schema.
+> - The schema itself must be a valid [Draft 2020-12](https://json-schema.org/draft/2020-12) [JSON Schema](https://json-schema.org/).
+> - The filled instance is **not automatically validated**.
+>
+> See [Load, validate, deference, fill](#load-validate-dereference-fill) for how you can validate instances and schemas.
 
 
 ## Examples
 
-> [!IMPORTANT]
-> Instance must be valid to its schema, and the schema itself must be a valid JSON Schema.
 
-### Load, validate, dereference, and fill
+### Load, validate, dereference, fill
 
-See unabridged script at [examples/load_validate_dereference_fill.py](https://github.com/larsmaxfield/jsonschema-fill-default/blob/main/examples/load_validate_dereference_fill.py)
+See unabridged script at [examples/load_validate_dereference_fill.py](https://github.com/larsmaxfield/jsonschema-fill-default/blob/main/examples/load_validate_dereference_fill.py).
 
 ```python
 import json
@@ -82,6 +97,8 @@ validate(instance, schema)  # Validate instance against schema
 schema = replace_refs(schema) # De-reference schema "$refs"
 
 fill_default(instance, schema)  # Fill instance (mutates)
+
+validate(instance, schema)  # Validate filled instance
 
 print(f"\nFilled:\n{json.dumps(instance, indent=4)}")
 ```
