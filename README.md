@@ -27,6 +27,8 @@ fill_default(instance, schema)  # Mutates instance!
 
 > [!CAUTION]
 > Filled instances are not automatically validated.
+>
+> See [Load, validate, deference, fill](#load-validate-dereference-fill) for how you can validate instances and schemas.
 
 
 ## Install
@@ -39,9 +41,12 @@ pip install jsonschema-fill-default
 
 ## Features
 
+See [examples](#examples) for showcasing of these features:
+
 - Fills all missing defaults, including nested ones.
 
 - Works with the following keywords and any combination thereof:
+  - `"properties"`
   - `"allOf"`
   - `"anyOf"`
   - `"oneOf"`
@@ -49,8 +54,6 @@ pip install jsonschema-fill-default
   - `"if-then(-else)"`
   - `"prefixItems"`
   - `"items"`
-  - `"properties"
-  See [examples](#examples) for details.
 
 - Uses the first applicable default if multiple defaults exist for a single property.
 
@@ -60,8 +63,6 @@ pip install jsonschema-fill-default
 > - The instance must already be valid to its schema.
 > - The schema itself must be a valid [Draft 2020-12](https://json-schema.org/draft/2020-12) [JSON Schema](https://json-schema.org/).
 > - The filled instance is **not automatically validated**.
->
-> See [Load, validate, deference, fill](#load-validate-dereference-fill) for how you can validate instances and schemas.
 
 
 ## Examples
