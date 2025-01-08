@@ -13,7 +13,7 @@ def fill_default(instance: dict, schema: dict):
 
     Args:
         instance (dict): JSON instance valid against the given schema
-        schema (dict): JSON schema adhering to draft 2020-12
+        schema (dict): JSON schema adhering to Draft 2020-12
 
     Returns:
         instance (dict): Mutated filled instance (not a copy).
@@ -29,6 +29,8 @@ def fill_default(instance: dict, schema: dict):
             _fill_ifthenelse(instance, schema)
         if keyword == "oneOf":
             _fill_oneof(instance, schema)
+        if keyword == "dependentSchemas":
+            _fill_dependentschemas(instance, schema)
     return None
 
 
@@ -43,7 +45,7 @@ def _fill_properties(instance: dict, schema: dict):
 
     Args:
         instance (dict): JSON instance valid against the given schema
-        schema (dict): JSON schema adhering to draft 2020-12 with a top-level
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
             "properties" keyword
 
     Returns:
@@ -81,7 +83,7 @@ def _fill_oneof(instance: dict, schema: dict):
 
     Args:
         instance (dict): JSON instance valid against the given schema
-        schema (dict): JSON schema adhering to draft 2020-12 with a top-level
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
             "oneOf" keyword
 
     Returns:
@@ -110,7 +112,7 @@ def _fill_allof(instance: dict, schema: dict):
 
     Args:
         instance (dict): JSON instance valid against the given schema
-        schema (dict): JSON schema adhering to draft 2020-12 with a top-level
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
             "allOf" keyword
 
     Returns:
@@ -130,7 +132,7 @@ def _fill_anyof(instance: dict, schema: dict):
 
     Args:
         instance (dict): JSON instance valid against the given schema
-        schema (dict): JSON schema adhering to draft 2020-12 with a top-level
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
             "anyOf" keyword
 
     Returns:
@@ -147,6 +149,27 @@ def _fill_anyof(instance: dict, schema: dict):
     return None
 
 
+def _fill_dependentschemas(instance: dict, schema: dict):
+    """Recursively fill a JSON instance with schema "dependentSchemas" defaults
+
+    Fills all nested structures.
+
+    Mutates the instance input, so None is returned.
+
+    Args:
+        instance (dict): JSON instance valid against the given schema
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
+            "dependentSchemas" keyword
+
+    Returns:
+        None
+    """
+    for _property, subschema in schema["dependentSchemas"].items():
+        if _property in instance:
+            fill_default(instance, subschema)
+    return None
+
+
 def _fill_ifthenelse(instance: dict, schema: dict):
     """Recursively fill a JSON instance with schema "if-then(-else)" defaults
 
@@ -156,7 +179,7 @@ def _fill_ifthenelse(instance: dict, schema: dict):
 
     Args:
         instance (dict): JSON instance valid against the given schema
-        schema (dict): JSON schema adhering to draft 2020-12 with a top-level
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
             "if", "then", and (optionally) "else" keyword
 
     Returns:
