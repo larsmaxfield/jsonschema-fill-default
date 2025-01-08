@@ -41,11 +41,9 @@ pip install jsonschema-fill-default
 
 ## Features
 
-See [examples](#examples) for showcasing of these features:
-
 - Fills all missing defaults, including nested ones.
 
-- Works with the following keywords and any combination thereof:
+- Works with the following keywords and any combination thereof (see [examples](#examples) for details):
   - `"properties"`
   - `"allOf"`
   - `"anyOf"`
@@ -115,11 +113,7 @@ schema = {
         "someObject": {
             "properties": {
                 "someNumber": {"default": 3.14},
-                "someBoolean": {"default": True}
-            }
-        }
-    },
-}
+                "someBoolean": {"default": True}}}}}
 
 instance = {
     "someObject": {
@@ -130,53 +124,56 @@ instance = {
 fill_default(instance, schema)
 ```
 ```python
->>> instance
-
-{
-    "someString": "The default string",
-    "someObject": {
-        "someNumber": -1,
-        "someBoolean": True
+original
+    {
+        "someObject": {
+            "someNumber": -1
+        }
     }
-}
+
+filled
+    {
+        "someString": "The default string",
+        "someObject": {
+            "someNumber": -1,
+            "someBoolean": True
+        }
+    }
 ```
 
 
-### Conditional properties with defaults with `"if-then"`
+### Conditional properties with defaults with `"dependentSchemas"`
 
 ```python
 from jsonschema_fill_default import fill_default
 
 schema = {
-    "properties": {"someNumber": {"default": 100}},
-    "if": {
-        "required": ["someBoolean"]
-    },
-    "then": {"properties": {
-        "conditionalString": {"default": "someBoolean was given"}
-    }}
-}
+    "properties": {"some_number": {"default": 100}},
+    "dependentSchemas": {
+        "some_bool": {
+            "properties": {
+              "some_string": {"default": "some_bool given"}}}}}
 
 without_bool = {}
-with_bool = {"someBoolean": True}
+with_bool = {"some_bool": False}
 
-fill_default(without_bool, schema)
+fill_default(without_bool, schema)`
 fill_default(with_bool, schema)
 ```
 ```python
->>> without_bool
+original  {}
+filled    {"some_number": 100}
 
-{
-    "someNumber": 100
-}
-
->>> with_bool
-
-{
-    "someNumber": 100,
-    "someBoolean": True,
-    "conditionalString": "someBoolean was given"
-}
+original
+    {
+        "some_bool": False
+    }
+filled
+    {
+        "some_number": 100,
+        "some_bool": False,
+        "some_string": "some_bool given"
+    }
 ```
 
 
@@ -203,7 +200,7 @@ schema = {
         }}
     },
     "else": {"properties": {
-        "conditionalString": {"default": "No integer given"}
+        "conditionalString": {"default": "someInteger not given"}
     }}
 }
 
@@ -216,25 +213,14 @@ fill_default(odd, schema)
 fill_default(even, schema)
 ```
 ```python
->>> none
+original  {}
+filled    {"conditionalString": "someInteger not given"}
 
-{
-    "conditionalString": "No integer given"
-}
+original  {"someInteger": 3}
+filled    {"someInteger": 3, "conditionalString": "Odd integer"}
 
->>> odd
-
-{
-    "someInteger": 3,
-    "conditionalString": "Odd integer"
-}
-
->>> even
-
-{
-    "someInteger": 4,
-    "conditionalString": "Even integer"
-}
+original  {"someInteger": 4}
+filled    {"someInteger": 4, "conditionalString": "Even integer"}
 ```
 
 ### Different properties and defaults with `"oneOf"`
@@ -275,21 +261,62 @@ fill_default(A, schema)
 fill_default(B, schema)
 ```
 ```python
->>> A
+original  {"food": "cake"}
+filled    {"food": "cake", "price": 9.95}
 
-{
-    "food": "cake",
-    "price": 9.95
-}
 
->>> B
-
-{
-    "activity": "eat",
-    "duration": 30
-}
+original  {"activity": "eat"}
+filled    {"activity": "eat", "duration": 30}
 ```
 
+### Fill array defaults with `"prefixItems"` and `"items"`
+
+```python
+from jsonschema_fill_default import fill_default
+
+schema = {
+    "type": "array",
+    "prefixItems": [
+        {"type": "number"},
+        {"type": "string"},
+        {"enum": ["Street", "Avenue", "Drive"], "default": "Drive"}
+    ],
+    "items": {
+        "type": "object",
+        "properties": {
+            "name": {"type": "string"},
+            "age": {"type": "integer", "default": 11}
+        },
+        "required": ["name"]
+    }
+}
+
+a = [4, "Privet"]
+fill_default(a, schema)
+```
+```python
+# Missing prefixItems are only filled if there are only default-resolving prefixItem schemas remaining.
+
+original  [4]
+filled    [4]
+
+original  [4, "Privet"]
+filled    [4, "Privet", "Drive"]
+
+
+# Existing prefixItems and items are filled
+
+original  [4, "Privet", "Drive",
+           {"name": "Harry"},
+           {"name": "Dudley"}]
+filled    [4, "Privet", "Drive",
+           {"name": "Harry", "age": 11},
+           {"name": "Dudley", "age": 11}]
+
+
+original  [1428, "Elm", "Street"]
+filled    [1428, "Elm", "Street"]
+```
 
 ## Developers
 
