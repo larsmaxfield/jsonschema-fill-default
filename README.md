@@ -18,11 +18,10 @@ fill_default(instance, schema)  # Mutates instance!
 ```
 ```python
 >>> instance
-
-{
-    "text": "Goodbye",
-    "font": 12
-}
+    {
+        "text": "Goodbye",
+        "font": 12
+    }
 ```
 
 > [!CAUTION]
@@ -43,6 +42,8 @@ pip install jsonschema-fill-default
 
 - Fills all missing defaults, including nested ones.
 
+- Uses the first applicable default if multiple defaults exist for a single property.
+
 - Works with the following keywords and any combination thereof (see [examples](#examples) for details):
   - `"properties"`
   - `"allOf"`
@@ -52,10 +53,6 @@ pip install jsonschema-fill-default
   - `"if-then(-else)"`
   - `"prefixItems"`
   - `"items"`
-
-- Uses the first applicable default if multiple defaults exist for a single property.
-
-- Helps you verify a schema's defaults.
 
 > [!IMPORTANT]
 > - The instance must already be valid to its schema.
