@@ -62,7 +62,12 @@ def fill_default(instance: Union[dict, list], schema: dict) -> Union[dict, list]
             if "items" in schema:
                 _fill_items(instance[-n_instance_items:], schema)
         elif n_instance >= n_schema_non_default_prefixitems:
-            print(instance[n_schema_non_default_prefixitems:n_schema_prefixitems])
+            print(n_instance)
+            for schema_for_missing_default_prefixitem in schema["prefixItems"][n_instance:]:
+                mock_schema = {"properties": {"missing_item": schema_for_missing_default_prefixitem}}
+                mock_instance = {}
+                fill_default(mock_instance, mock_schema)
+                instance.append(mock_instance["missing_item"])
     return None
 
 

@@ -514,7 +514,7 @@ test_schemas_instances = {
             "prefixItems": [
                 {"type": "number"},
                 {"type": "string"},
-                {"enum": ["Street", "Avenue", "Drive"], "default": "Street"}
+                {"enum": ["Street", "Avenue", "Drive"], "default": "Drive"}
             ],
             "items": {
                 "type": "object",
@@ -526,22 +526,26 @@ test_schemas_instances = {
             }
         },
         "instances": [
-            # {  # Don't fill! Why? Not all non-default were reached.
-            #     # Or rather, defaults are only filled if you make it
-            #     "original": [4],
-            #     "expected": [4]
-            # },
-            # {  # Minimum
-            #     "original": [1428, "Elm"],
-            #     "expected": [1428, "Elm", "Street"]
-            # },
-            # {  # Minimum
-            #     "original": [4, "Privet", "Drive"],
-            #     "expected": [4, "Privet", "Drive"]
-            # },
+            {  # Don't fill! Why? Not all non-default were reached.
+                # Or rather, defaults are only filled if you make it
+                "original": [4],
+                "expected": [4]
+            },
+            {  # Fill!
+                "original": [4, "Privet"],
+                "expected": [4, "Privet", "Drive"]
+            },
             {  # Full
                 "original": [4, "Privet", "Drive", {"name": "Harry"}],
                 "expected": [4, "Privet", "Drive", {"name": "Harry", "age": 12}]
+            },
+            {  # Full
+                "original": [4, "Privet", "Drive", {"name": "Harry"}, {"name": "Dudley"}],
+                "expected": [4, "Privet", "Drive", {"name": "Harry", "age": 12}, {"name": "Dudley", "age": 12}]
+            },
+            {  # Minimum
+                "original": [1428, "Elm", "Street"],
+                "expected": [1428, "Elm", "Street"]
             },
         ]
     },
