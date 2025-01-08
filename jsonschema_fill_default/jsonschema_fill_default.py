@@ -42,33 +42,76 @@ def fill_default(instance: Union[dict, list], schema: dict) -> Union[dict, list]
         if keyword == "dependentSchemas":
             _fill_dependentschemas(instance, schema)
     if isinstance(instance, list):  # Handle "(prefix)Items" for lists (arrays)
-        # Get quantities
-        n_instance = len(instance)
-        n_schema_prefixitems = 0
-        n_schema_non_default_prefixitems = 0
-        if "prefixItems" in schema:
-            n_schema_prefixitems = len(schema["prefixItems"])
-
-            # Find number of non-continuously-default prefixItems by looping
-            # in reverse until default is not found in that prefixItem.
-            n_schema_non_default_prefixitems = n_schema_prefixitems
-            for prefixitem in reversed(schema["prefixItems"]):
-                if "default" in prefixitem:
-                    n_schema_non_default_prefixitems -= 1
-                else:
-                    break
-        n_instance_items = n_instance - n_schema_prefixitems
-        if n_instance_items > 0:
-            if "items" in schema:
-                _fill_items(instance[-n_instance_items:], schema)
-        elif n_instance >= n_schema_non_default_prefixitems:
-            print(n_instance)
-            for schema_for_missing_default_prefixitem in schema["prefixItems"][n_instance:]:
-                mock_schema = {"properties": {"missing_item": schema_for_missing_default_prefixitem}}
-                mock_instance = {}
-                fill_default(mock_instance, mock_schema)
-                instance.append(mock_instance["missing_item"])
+        _fill_prefixitems_and_items(instance, schema)
     return None
+
+
+def _fill_prefixitems_and_items(instance: list, schema: dict):
+    """Recursively fill a list with schema "prefixItems" and "items" defaults
+
+    Fills all nested structures.
+
+    Mutates the instance input items, so None is returned.
+
+    Args:
+        instance (array): List of items valid against the given schema
+        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
+            "prefixItems" keyword and/or "items" keyword
+
+    Returns:
+        None
+    """
+    # Get quantities
+    n_instance = len(instance)
+    n_schema_prefixitems = 0
+    n_schema_non_default_prefixitems = 0
+    if "prefixItems" in schema:
+        n_schema_prefixitems = len(schema["prefixItems"])
+
+        # Find number of non-continuously-default prefixItems by looping
+        # in reverse until that prefixItem does not resolve to a default.
+        # How do we determine if something resolves to a default? Provide
+        # an empty instance.
+        n_schema_non_default_prefixitems = n_schema_prefixitems
+        for prefixitem_schema in reversed(schema["prefixItems"]):
+            # If an empty property filled with something from the schema
+            # returns something, then it resolves to a default. If not, it has
+            # no default.
+            if _fill_empty_property(prefixitem_schema) is not None:
+                n_schema_non_default_prefixitems -= 1
+            else:
+                break
+    n_missing_prefixitems = 0
+    n_instance_items = max(n_instance - n_schema_prefixitems, 0)
+    if n_instance_items > 0:  # Fill items
+        if "items" in schema:
+            for item in instance[-n_instance_items:]:
+                fill_default(item,  schema["items"])
+    elif n_instance >= n_schema_non_default_prefixitems:  # Fill missing prefixItems
+        n_missing_prefixitems = len(schema["prefixItems"][n_instance:])
+        for schema_of_missing_prefixitem in schema["prefixItems"][n_instance:]:
+            _property = _fill_empty_property(schema_of_missing_prefixitem)
+            instance.append(_property)
+
+    # For all existing prefixitems, fill default if dict or list
+    n_existing_prefixitems = n_schema_prefixitems - n_missing_prefixitems
+    if n_existing_prefixitems > 0:
+        for existing_instance, existing_schema in zip(instance[:n_existing_prefixitems], schema["prefixItems"][:n_existing_prefixitems]):  
+            if isinstance(existing_instance, (dict, list)):
+                fill_default(existing_instance, existing_schema)
+
+    return None
+
+
+def _fill_empty_property(schema: dict):
+    """Return the default value of an empty property filled with a schema"""
+    mock_schema = {"properties": {"property": schema}}
+    mock_instance = {}
+    fill_default(mock_instance, mock_schema)
+    if "property" in mock_instance:
+        return mock_instance["property"]
+    else:
+        return None
 
 
 def _fill_properties(instance: dict, schema: dict):
@@ -108,7 +151,7 @@ def _fill_properties(instance: dict, schema: dict):
                         subschema["default"][default_key]
         if any(key in ["oneOf", "allOf", "anyOf", "if", "dependentSchemas"] for key in subschema):
             fill_default(instance[_property], subschema)
-        if "items" in subschema:
+        if "prefixItems" in subschema or "items" in subschema:
             if _property in instance:  # Instance must have array to fill
                 fill_default(instance[_property], subschema)
     return None
@@ -210,24 +253,6 @@ def _fill_dependentschemas(instance: dict, schema: dict):
     return None
 
 
-def _fill_items(instance: list, schema: dict):
-    """Recursively fill a list of items with schema "items" defaults
-
-    Fills all nested structures.
-
-    Mutates the instance input items, so None is returned.
-
-    Args:
-        instance (array): List of items valid against the given schema
-        schema (dict): JSON schema adhering to Draft 2020-12 with a top-level
-            "items" keyword
-
-    Returns:
-        None
-    """
-    for item in instance:
-        fill_default(item, schema["items"])
-    return None
 
 
 def _fill_ifthenelse(instance: dict, schema: dict):
