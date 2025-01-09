@@ -3,7 +3,7 @@ name: Publish Test PyPI on Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*.*'
 
 permissions:
   contents: read
