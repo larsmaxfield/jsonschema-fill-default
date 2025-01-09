@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "jsonschema-fill-default"
-version = "0.2.0"
+version = "0.1.0.20250109"
 description = "Fill a JSON instance with the missing defaults from its JSON Schema Draft 2020-12-valid schema"
 authors = ["Lars Maxfield"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-jsonschema = "^4.23"
+jsonschema = "^4.23.0"
 
 [tool.poetry.group.dev.dependencies]
 jsonref = "^1.1.0"
