@@ -13,8 +13,8 @@ jobs:
     name: Upload release to Test PyPI
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
-      url: https://test.pypi.org/project/jsonschema-fill-default/
+      name: pypi
+      url: https://pypi.org/project/jsonschema-fill-default/
     permissions:
       id-token: write
     steps:
@@ -44,5 +44,3 @@ jobs:
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
