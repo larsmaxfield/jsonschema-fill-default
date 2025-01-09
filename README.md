@@ -391,3 +391,11 @@ _From [this post](https://www.reddit.com/r/Python/comments/1bbbwk/comment/c95cjs
 > While there's nothing stopping people from doing an 'import stuff.bigstuff.Stuffometer' or 'import stuff.privateStuff.HiddenStuff', they'll at least know they're peeking behind the curtain at that point.
 > 
 > Rather than being implicit, I find it's rather explicit.
+> 
+
+
+## Credits
+
+jsonschema-fill-default is by Lars Maxfield
+
+Recursive filling of `"properties"` based on [Tom-tbt](https://stackoverflow.com/users/10712860/tom-tbt)'s answer to [Set default values according to JSON schema automatically](https://stackoverflow.com/questions/72044825/set-default-values-according-to-json-schema-automatically) on Stack Overflow.
