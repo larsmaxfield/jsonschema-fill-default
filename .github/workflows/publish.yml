@@ -1,24 +1,48 @@
-name: Python package
+name: Publish Test PyPI on Release
+
 on:
   push:
     tags:
-      - "v*.*.*.*"
+      - 'v*.*.*.*'
+
+permissions:
+  contents: read
+
 jobs:
-  build:
+  test-pypi-publish:
+    name: Upload release to Test PyPI
     runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/jsonschema-fill-default/
+    permissions:
+      id-token: write
     steps:
-      - run: echo "Job automatically triggered by a tagged ${{ github.event_name }} event."
-      - uses: actions/checkout@v3
-      - name: Build and publish to pypi
-        uses: JRubics/poetry-publish@v2.0
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v5
         with:
-          pypi_token: ${{ secrets.TESTPYPI }}
-          repository_name: "jsonschema-fill-default"
-          repository_url: "https://test.pypi.org/projects/jsonschema-fill-default"
-      
-    #steps:
-      #- uses: actions/checkout@v3
-      #- name: Build and publish to pypi
-      #  uses: JRubics/poetry-publish@v2.0
-      #  with:
-      #    pypi_token: ${{ secrets.PYPI_TOKEN }}
+          python-version: "3.9"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python - -y
+
+      - name: Update PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Update Poetry configuration
+        run: poetry config virtualenvs.create false
+
+      - name: Install dependencies
+        run: poetry install --sync --no-interaction
+
+      - name: Package project
+        run: poetry build
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
