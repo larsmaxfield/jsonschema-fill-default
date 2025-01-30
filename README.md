@@ -357,6 +357,19 @@ cd /root/of/this/repo
 conda activate ./env
 ```
 
+### How to release
+
+1. Checkout branch 
+2. Update version X.Y.Z.YYYYMMDD in `pyproject.toml`
+    - Bump X.Y.Z according to semantic versioning 2.0.0
+    - Set YYYYMMDD according to current UTC date
+4. Update `poetry.lock` with `poetry update`
+5. Push changes
+6. Merge with main
+7. Create release with title and tag `vX.Y.Z.YYYYMMDD` (prepend `v` in both)
+8. PyPI is automatically published
+
+
 ### Paradigms
 
 #### Use the top-level `__init__.py` to declare a 'public' API for the module

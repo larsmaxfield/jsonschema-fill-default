@@ -136,8 +136,9 @@ def _fill_properties(instance: dict, schema: dict):
             if _property not in instance:
                 instance[_property] = dict()
             fill_default(instance[_property], subschema)
-            if len(instance[_property]) == 0:  # No default found inside
-                del instance[_property]
+            if isinstance(instance[_property], (list, tuple, dict, set)):
+                if len(instance[_property]) == 0:  # No default found inside
+                    del instance[_property]
         if _property not in instance \
                 and "default" in subschema:
             instance[_property] = subschema["default"]
