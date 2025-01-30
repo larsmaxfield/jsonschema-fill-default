@@ -703,7 +703,7 @@ test_schemas_instances = {
                 }
             }
         ]
-    },
+    }
 }
 
 
