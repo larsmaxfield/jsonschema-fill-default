@@ -132,7 +132,7 @@ def _fill_properties(instance: dict, schema: dict):
         None
     """
     for _property, subschema in schema["properties"].items():
-        if "properties" in subschema:  # Recursion
+        if any(key in ["properties", "oneOf", "allOf", "anyOf", "if", "dependentSchemas"] for key in subschema):  # Recursion
             if _property not in instance:
                 instance[_property] = dict()
             fill_default(instance[_property], subschema)
@@ -149,8 +149,6 @@ def _fill_properties(instance: dict, schema: dict):
                 if default_key not in instance[_property]:
                     instance[_property][default_key] = \
                         subschema["default"][default_key]
-        if any(key in ["oneOf", "allOf", "anyOf", "if", "dependentSchemas"] for key in subschema):
-            fill_default(instance[_property], subschema)
         if "prefixItems" in subschema or "items" in subschema:
             if _property in instance:  # Instance must have array to fill
                 fill_default(instance[_property], subschema)

@@ -669,6 +669,41 @@ test_schemas_instances = {
             }
         ]
     },
+    "nestedKeywords": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema of 'dependentSchemas' with nested keywords",
+            "type": "object",
+            "properties": {
+                "subObject": {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "subString": {"default": "nested"}
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "instances": [
+            {  # Empty
+                "original": {
+                },
+                "expected": {
+                    "subObject": {"subString": "nested"}
+                }
+            },
+            {  # Full
+                "original": {
+                    "subObject": {"subString": "already taken"}
+                },
+                "expected": {
+                    "subObject": {"subString": "already taken"}
+                }
+            }
+        ]
+    },
 }
 
 

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jsonschema-fill-default"
-version = "0.1.0.20250109"
+version = "0.1.1.20250130"
 description = "Fill a JSON instance with the missing defaults from its JSON Schema Draft 2020-12-valid schema"
 authors = ["Lars Maxfield"]
 readme = "README.md"
