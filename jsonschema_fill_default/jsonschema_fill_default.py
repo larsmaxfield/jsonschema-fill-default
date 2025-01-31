@@ -114,6 +114,13 @@ def _fill_empty_property(schema: dict):
         return None
 
 
+def _is_empty_object(x):
+    """True if an empty object, False if not empty and/or not an object"""
+    if not isinstance(x, (list, tuple, dict, set, range)):
+        return False
+    return not x
+
+
 def _fill_properties(instance: dict, schema: dict):
     """Recursively fill a JSON instance with schema "properties" defaults
 
@@ -135,10 +142,12 @@ def _fill_properties(instance: dict, schema: dict):
         if any(key in ["properties", "oneOf", "allOf", "anyOf", "if", "dependentSchemas"] for key in subschema):  # Recursion
             if _property not in instance:
                 instance[_property] = dict()
+                _was_empty = False
+            else:
+                _was_empty = _is_empty_object(instance[_property])
             fill_default(instance[_property], subschema)
-            if isinstance(instance[_property], (list, tuple, dict, set)):
-                if len(instance[_property]) == 0:  # No default found inside
-                    del instance[_property]
+            if not _was_empty and _is_empty_object(instance[_property]):
+                del instance[_property]
         if _property not in instance \
                 and "default" in subschema:
             instance[_property] = subschema["default"]
