@@ -41,6 +41,9 @@ def fill_default(instance: Union[dict, list], schema: dict) -> Union[dict, list]
             _fill_oneof(instance, schema)
         if keyword == "dependentSchemas":
             _fill_dependentschemas(instance, schema)
+        if keyword == "default":
+            if not instance:
+                instance.update(schema["default"])
     if isinstance(instance, list):  # Handle "(prefix)Items" for lists (arrays)
         _fill_prefixitems_and_items(instance, schema)
     return None
