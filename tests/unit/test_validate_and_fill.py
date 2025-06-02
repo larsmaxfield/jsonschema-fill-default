@@ -1,6 +1,6 @@
 import pytest
 from jsonschema import validate, protocols
-from jsonschema_fill_default import fill_default
+from jsonschema_fill_default import fill_default, FillConfig
 
 
 # List of schemas, instances, and filled instances tuples
@@ -72,6 +72,206 @@ test_schemas_instances = {
                     "someObject": {
                         "someNumber": 0.123,
                         "someBoolean": False
+                    }
+                }
+            },
+        ]
+    },
+    "rootDefault": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema with 'default' at root",
+            "type": "object",
+            "properties": {
+                "pool": {
+                    "properties": {
+                        "max_connections": {"type": "integer"},
+                        "min_connections": {"type": "integer"}
+                    }
+                }
+            },
+            "default": {
+                "pool": {
+                    "max_connections": 8,
+                    "min_connections": 0
+                }
+            },
+            "additionalProperties": False,
+            "unevaluatedProperties": False
+        },
+        "instances": [
+            {  # Empty
+                "original": {},
+                "expected": {
+                    "pool": {
+                        "max_connections": 8,
+                        "min_connections": 0
+                    }
+                }
+            },
+            {  # Partial
+                "original": {
+                    "pool": {
+                        "max_connections": 16
+                    }
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 16
+                    }
+                }
+            },
+            {  # Full
+                "original": {
+                    "pool": {
+                        "max_connections": 32,
+                        "min_connections": 2
+                    }
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 32,
+                        "min_connections": 2
+                    }
+                }
+            }
+        ]
+    },
+    "noParents": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema only with default sub-properties",
+            "type": "object",
+            "properties": {
+                "pool": {
+                    "properties": {
+                        "max_connections": {"type": "integer", "default": 8},
+                        "min_connections": {"type": "integer", "default": 0}
+                    }
+                }
+            },
+            "additionalProperties": False,
+            "unevaluatedProperties": False
+        },
+        "instances": [
+            {  # Missing, do create
+                "config": {"create_missing_parents": True},
+                "original": {},
+                "expected": {
+                    "pool": {
+                        "max_connections": 8,
+                        "min_connections": 0
+                    }
+                }
+            },
+            {  # Missing, do not create
+                "config": {"create_missing_parents": False},
+                "original": {},
+                "expected": {}
+            },
+            {  # Empty, do create
+                "config": {"create_missing_parents": True},
+                "original": {
+                    "pool": {}
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 8,
+                        "min_connections": 0
+                    }
+                }
+            },
+            {  # Empty, do not create
+                "config": {"create_missing_parents": False},
+                "original": {
+                    "pool": {}
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 8,
+                        "min_connections": 0
+                    }
+                }
+            },
+            {  # Partial, do create
+                "config": {"create_missing_parents": True},
+                "original": {
+                    "pool": {
+                        "max_connections": 16
+                    }
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 16,
+                        "min_connections": 0
+                    }
+                }
+            },
+            {  # Partial, do not create
+                "config": {"create_missing_parents": False},
+                "original": {
+                    "pool": {
+                        "max_connections": 16
+                    }
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 16,
+                        "min_connections": 0
+                    }
+                }
+            },
+        ]
+    },
+    "rootDefaultCreateNoParents": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema with 'default' at root",
+            "type": "object",
+            "properties": {
+                "pool": {
+                    "properties": {
+                        "max_connections": {"type": "integer", "default": 8},
+                        "min_connections": {"type": "integer", "default": 0}
+                    }
+                },
+                "timers": {
+                    "properties": {
+                        "short":  {"type": "integer"},
+                        "default": {"type": "integer"},
+                        "long": {"type": "integer"}
+                    }
+                }
+            },
+            "default": {
+                "timers": {
+                    "short": 1000,
+                    "default": 2000,
+                    "long": 4000
+                }
+            },
+            "additionalProperties": False,
+            "unevaluatedProperties": False
+        },
+        "instances": [
+            {  # Empty, do create; therefore no timers default
+                "original": {},
+                "config": {"create_missing_parents": True},
+                "expected": {
+                    "pool": {
+                        "max_connections": 8,
+                        "min_connections": 0
+                    }
+                }
+            },
+            {  # Empty, do not create; therefore no pool and yes timers
+                "original": {},
+                "config": {"create_missing_parents": False},
+                "expected": {
+                    "timers": {
+                        "short": 1000,
+                        "default": 2000,
+                        "long": 4000
                     }
                 }
             },
@@ -688,7 +888,20 @@ test_schemas_instances = {
         },
         "instances": [
             {  # Empty
+                "original": {},
+                "expected": {
+                    "subObject": {"subString": "nested"}
+                }
+            },
+            {  # Missing, no create
+                "config": {"create_missing_parents": False},
+                "original": {},
+                "expected": {}
+            },
+            {  # Empty, no create
+                "config": {"create_missing_parents": False},
                 "original": {
+                    "subObject": {}
                 },
                 "expected": {
                     "subObject": {"subString": "nested"}
@@ -762,18 +975,19 @@ for test in test_schemas_instances.values():
         instance_schema_pairs.append((instance["original"], test["schema"]))
         instance_schema_pairs.append((instance["expected"], test["schema"]))
 
-original_schema_expected_triplets = []
+original_schema_expected_quadruplets = []
 for test in test_schemas_instances.values():
     for instance in test["instances"]:
-        original_schema_expected_triplets.append((
+        original_schema_expected_quadruplets.append((
             instance["original"],
             test["schema"],
-            instance["expected"]
+            instance["expected"],
+            instance.get("config", {})
         ))
 
 
 # All schemas must be valid to their meta-schema
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "schema",
     schemas
 )
@@ -782,7 +996,7 @@ def test_schema_is_valid_meta_schema(schema):
 
 
 # All instances must be valid to their schema
-@ pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "instance, schema",
     instance_schema_pairs
 )
@@ -791,10 +1005,11 @@ def test_instance_is_valid_schema(instance, schema):
 
 
 # All filled instances must equal their expected
-@ pytest.mark.parametrize(
-    "original, schema, expected",
-    original_schema_expected_triplets
+@pytest.mark.parametrize(
+    "original, schema, expected, config",
+    original_schema_expected_quadruplets
 )
-def test_filled_instance_is_equal_to_expected(original, schema, expected):
-    fill_default(original, schema)
+def test_filled_instance_is_equal_to_expected(
+        original, schema, expected, config):
+    fill_default(original, schema, FillConfig(**config))
     assert original == expected
