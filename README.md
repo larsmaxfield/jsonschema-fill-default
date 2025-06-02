@@ -42,6 +42,8 @@ pip install jsonschema-fill-default
 
 - Fills all missing defaults, including nested ones.
 
+- Optionally [do *not* create missing parents](#do-not-create-missing-parents-with-nested-defaults) when filling.
+
 - Uses the first applicable default if multiple defaults exist for a single property.
 
 - Works with the following keywords and any combination thereof (see [examples](#examples) for details):
@@ -136,6 +138,34 @@ filled
             "someBoolean": True
         }
     }
+```
+
+
+### Do not create missing parents with nested defaults
+
+```python
+from jsonschema_fill_default import fill_default, FillConfig
+
+schema = {
+    "properties": {
+        "pool": {
+            "properties": {
+                "max_connections": {"type": "int", "default": 8},
+                "min_connections": {"type": "int", "default": 0}
+            }
+        }
+    }
+}
+
+config = FillConfig(create_missing_parents=False)
+
+missing = {}
+fill_default(missing, schema, config)
+assert missing == {}, missing
+
+empty = {"pool": {}}
+fill_default(empty, schema, config)
+assert empty == {"pool": {"max_connections": 8, "min_connections": 0}}, empty
 ```
 
 
