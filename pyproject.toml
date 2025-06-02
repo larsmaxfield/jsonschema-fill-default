@@ -2,8 +2,12 @@
 name = "jsonschema-fill-default"
 version = "0.1.3.20250131"
 description = "Fill a JSON instance with the missing defaults from its JSON Schema Draft 2020-12-valid schema"
+license = "MIT"
 authors = ["Lars Maxfield"]
+maintainers = ["Lars Maxfield"]
 readme = "README.md"
+repository = "https://github.com/larsmaxfield/jsonschema-fill-default"
+keywords = ["jsonschema", "default"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
