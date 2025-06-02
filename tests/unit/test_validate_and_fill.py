@@ -77,6 +77,66 @@ test_schemas_instances = {
             },
         ]
     },
+    "rootDefault": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema with 'default' at root",
+            "type": "object",
+            "properties": {
+                "pool": {
+                    "properties": {
+                        "max_connections": {"type": "integer"},
+                        "min_connections": {"type": "integer"}
+                    }
+                }
+            },
+            "default": {
+                "pool": {
+                    "max_connections": 8,
+                    "min_connections": 0
+                }
+            },
+            "additionalProperties": False,
+            "unevaluatedProperties": False
+        },
+        "instances": [
+            {  # Empty
+                "original": {},
+                "expected": {
+                    "pool": {
+                        "max_connections": 8,
+                        "min_connections": 0
+                    }
+                }
+            },
+            {  # Partial
+                "original": {
+                    "pool": {
+                        "max_connections": 16
+                    }
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 16
+                    }
+                }
+            },
+            {  # Full
+                "original": {
+                    "pool": {
+                        "max_connections": 32,
+                        "min_connections": 2
+                    }
+                },
+                "expected": {
+                    "pool": {
+                        "max_connections": 32,
+                        "min_connections": 2
+                    }
+                }
+            },
+        ]
+    },
     "allOf": {
         "schema": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
