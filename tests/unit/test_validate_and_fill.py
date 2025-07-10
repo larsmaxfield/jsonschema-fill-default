@@ -963,6 +963,39 @@ test_schemas_instances = {
                 }
             }
         ]
+    },
+    "defaultNotDict": {
+        "schema": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "JSON Schema where default is not a dict, but instance is",
+            "type": "object",
+            "properties": {
+                "usuallyBool": {
+                    "default": True,
+                    "oneOf": [
+                        {"type": "boolean"},
+                        {"type": "object"}
+                    ]
+                }
+            }
+        },
+        "instances": [
+            {  # Empty
+                "original": {
+                },
+                "expected": {
+                    "usuallyBool": True
+                }
+            },
+            {  # Partial
+                "original": {
+                    "usuallyBool": {"is not": "a bool"}
+                },
+                "expected": {
+                    "usuallyBool": {"is not": "a bool"}
+                }
+            },
+        ]
     }
 }
 

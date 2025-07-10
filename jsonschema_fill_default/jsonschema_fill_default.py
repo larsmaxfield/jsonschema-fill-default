@@ -64,7 +64,10 @@ def fill_default(
             _fill_dependentschemas(instance, schema, config)
         if keyword == "default":
             if not instance:
-                instance.update(schema["default"])
+                if isinstance(schema["default"], dict):
+                    instance.update(schema["default"])
+                else:
+                    instance = schema["default"]
     if isinstance(instance, list):  # Handle "(prefix)Items" for lists (arrays)
         _fill_prefixitems_and_items(instance, schema, config)
     return None
@@ -183,8 +186,9 @@ def _fill_properties(instance: dict, schema: dict, config: FillConfig):
             instance[_property] = subschema["default"]
         # Fill missing keys if instance already exists as object
         elif _property in instance \
+                and isinstance(instance[_property], dict) \
                 and "default" in subschema \
-                and isinstance(instance[_property], dict):
+                and isinstance(subschema["default"], dict):
             for default_key in subschema["default"]:
                 if default_key not in instance[_property]:
                     instance[_property][default_key] = \
