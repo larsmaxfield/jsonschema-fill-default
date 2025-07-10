@@ -7,7 +7,7 @@ authors = ["Lars Maxfield"]
 maintainers = ["Lars Maxfield"]
 readme = "README.md"
 repository = "https://github.com/larsmaxfield/jsonschema-fill-default"
-keywords = ["jsonschema", "default"]
+keywords = ["jsonschema", "default", "nested"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
