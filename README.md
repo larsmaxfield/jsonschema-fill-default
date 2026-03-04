@@ -1,5 +1,11 @@
 # jsonschema-fill-default
 
+![Pepy Total Downloads](https://img.shields.io/pepy/dt/jsonschema-fill-default)
+
+```bash
+pip install jsonschema-fill-default
+```
+
 Fill a JSON instance in Python with the missing defaults from its [JSON Schema](https://json-schema.org/) [Draft 2020-12](https://json-schema.org/draft/2020-12)-valid schema.
 
 ```python
