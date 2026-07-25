@@ -115,7 +115,7 @@ def _fill_prefixitems_and_items(
         if "items" in schema:
             for item in instance[-n_instance_items:]:
                 fill_default(item,  schema["items"], config)
-    elif n_instance >= n_schema_non_default_prefixitems:  # Fill missing prefixItems
+    elif n_schema_prefixitems > 0 and n_instance >= n_schema_non_default_prefixitems:  # Fill missing prefixItems
         n_missing_prefixitems = len(schema["prefixItems"][n_instance:])
         for schema_of_missing_prefixitem in schema["prefixItems"][n_instance:]:
             _property = _fill_empty_property(
