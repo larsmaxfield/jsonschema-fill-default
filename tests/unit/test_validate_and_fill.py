@@ -659,6 +659,10 @@ test_schemas_instances = {
             }
         },
         "instances": [
+            {  # Empty
+                "original": [],
+                "expected": []
+            },
             {  # Mixed full
                 "original": [
                     {
